@@ -2,9 +2,6 @@
 
 (in-package #:4chan)
 
-(defparameter *chunk-size* 256
-  "Files are downloaded in chunks of this many bytes.")
-
 (defvar *thread-url*)
 
 (defun get-file-name (url)

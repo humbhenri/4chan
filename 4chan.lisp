@@ -34,11 +34,6 @@
        (equal (stp:local-name stp-element) "a")
        (equal (stp:attribute-value stp-element "class") "fileThumb")))
 
-(defun count-sub (str pat)
-  (loop with z = 0 with s = 0 while s do
-	(when (setf s (search pat str :start2 s))
-	  (incf z) (incf s (length pat)))
-     finally (return z)))
 
 (defun get-images (url)
   (setq *thread-url* url)
@@ -54,3 +49,6 @@
        do (progn
             (download-image (nth (- i 1) image-urls))
             (pb:pb i total)))))
+
+(defun main (args)
+  (get-images (second args)))

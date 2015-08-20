@@ -20,9 +20,11 @@
 (defun create-dir ()
   (ensure-directories-exist (get-thread-title)))
 
+
 (defun download-image (img-link)
   (let* ((url (prepare-link img-link)))
-    (trivial-download:download url (get-file-name url))))
+    (with-open-stream (*standard-output* (make-broadcast-stream))
+      (trivial-download:download url (get-file-name url)))))
 
 (defun prepare-link (href)
   (concatenate 'string "http://" (subseq href 2)))
@@ -32,11 +34,23 @@
        (equal (stp:local-name stp-element) "a")
        (equal (stp:attribute-value stp-element "class") "fileThumb")))
 
+(defun count-sub (str pat)
+  (loop with z = 0 with s = 0 while s do
+	(when (setf s (search pat str :start2 s))
+	  (incf z) (incf s (length pat)))
+     finally (return z)))
+
 (defun get-images (url)
   (setq *thread-url* url)
   (create-dir)
-  (let* ((str (drakma:http-request url))
-	 (document (chtml:parse str (cxml-stp:make-builder))))
+  (let* ((body (drakma:http-request url))
+	 (document (chtml:parse body (cxml-stp:make-builder)))
+         (image-urls (list)))
     (stp:do-recursively (a document)
-      (when (image-p a)	
-	(download-image (stp:attribute-value a "href"))))))
+      (when (image-p a)
+        (pushnew (stp:attribute-value a "href") image-urls :test 'equal)))
+    (loop with total = (length image-urls)
+       for i from 1 to total
+       do (progn
+            (download-image (nth (- i 1) image-urls))
+            (pb:pb i total)))))

@@ -20,7 +20,6 @@
 (defun create-dir ()
   (ensure-directories-exist (get-thread-title)))
 
-
 (defun download-image (img-link)
   (let* ((url (prepare-link img-link)))
     (with-open-stream (*standard-output* (make-broadcast-stream))
@@ -29,7 +28,7 @@
 (defun prepare-link (href)
   (concatenate 'string "http://" (subseq href 2)))
 
-(defun image-p (stp-element)
+(defun imagep (stp-element)
   (and (typep stp-element 'stp:element)
        (equal (stp:local-name stp-element) "a")
        (equal (stp:attribute-value stp-element "class") "fileThumb")))
@@ -42,7 +41,7 @@
 	 (document (chtml:parse body (cxml-stp:make-builder)))
          (image-urls (list)))
     (stp:do-recursively (a document)
-      (when (image-p a)
+      (when (imagep a)
         (pushnew (stp:attribute-value a "href") image-urls :test 'equal)))
     (loop with total = (length image-urls)
        for i from 1 to total

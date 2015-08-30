@@ -44,10 +44,11 @@
       (when (imagep a)
         (pushnew (stp:attribute-value a "href") image-urls :test 'equal)))
     (loop with total = (length image-urls)
+       with pb = (make-instance 'pb:progress-bar :total total)
        for i from 1 to total
        do (progn
             (download-image (nth (- i 1) image-urls))
-            (pb:pb i total)))))
+            (pb:pb-inc pb)))))
 
 (defun main (args)
   (get-images (second args)))

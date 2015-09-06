@@ -37,18 +37,29 @@
 (defun get-images (url)
   (setq *thread-url* url)
   (create-dir)
-  (let* ((body (drakma:http-request url))
+  (let* ((body (handler-bind ((usocket:ns-try-again-condition #'(lambda (e)
+                                                                  (progn
+                                                                    (format t "Cannot reach network...~%")
+                                                                    (abort)))))
+                 (drakma:http-request url)))
 	 (document (chtml:parse body (cxml-stp:make-builder)))
-         (image-urls (list)))
+         (image-urls nil)
+         (fails nil))
     (stp:do-recursively (a document)
       (when (imagep a)
         (pushnew (stp:attribute-value a "href") image-urls :test 'equal)))
     (loop with total = (length image-urls)
        with pb = (make-instance 'pb:progress-bar :total total)
        for i from 1 to total
+       with image-link = (nth (- i 1) image-urls)
        do (progn
-            (download-image (nth (- i 1) image-urls))
-            (pb:pb-inc pb)))))
+            (handler-bind
+                ((trivial-download:http-error #'(lambda (e) (push image-link fails))))
+              (download-image image-link))
+            (pb:pb-inc pb)))
+    (when fails
+      (format t "The following images has not being downloaded:~%")
+      (dolist (image-link fails) (format t "~a~%" image-link)))))
 
 (defun main (args)
   (get-images (second args)))

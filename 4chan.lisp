@@ -51,8 +51,7 @@
     (loop with total = (length image-urls)
        with pb = (make-instance 'pb:progress-bar :total total)
        for i from 1 to total
-       with image-link = (nth (- i 1) image-urls)
-       do (progn
+       do (let ((image-link (nth (- i 1) image-urls)))
             (handler-bind
                 ((trivial-download:http-error #'(lambda (e) (push image-link fails))))
               (download-image image-link)

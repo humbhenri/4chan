@@ -3,6 +3,15 @@
 - Download and install [Quicklisp](https://www.quicklisp.org/beta/)
 - Download this thing to `quicklisp/local-projects/`
 - Install SBCL
+- Building a binary
+```
+sbcl --no-user-init --no-sysinit --non-interactive --load ~/quicklisp/setup.lisp --eval '(ql:quickload "4chan")' --eval '(ql:write-asdf-manifest-file "quicklisp-manifest.txt")'
+```
+And then
+
+```
+buildapp --manifest-file quicklisp-manifest.txt --load-system 4chan --entry 4chan:main --output bin/4chan
+```
 
 ## Usage
 - In a terminal, type `sbcl`

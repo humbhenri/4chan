@@ -55,8 +55,8 @@
        do (progn
             (handler-bind
                 ((trivial-download:http-error #'(lambda (e) (push image-link fails))))
-              (download-image image-link))
-            (pb:pb-inc pb)))
+              (download-image image-link)
+              (pb:pb-inc pb))))
     (when fails
       (format t "The following images has not being downloaded:~%")
       (dolist (image-link fails) (format t "~a~%" image-link)))))

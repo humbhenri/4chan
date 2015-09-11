@@ -15,8 +15,9 @@ And then
 ```
 buildapp --manifest-file quicklisp-manifest.txt --load-system 4chan --entry 4chan:main --output bin/4chan
 ```
+Run it with `4chan <thread url>`.
 
-## Usage
+## Usage from sbcl
 - In a terminal, type `sbcl`
 - `(ql:quickload '4chan)`
 - `(4chan:get-images <4chan url>)`

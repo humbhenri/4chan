@@ -1,3 +1,6 @@
+# 4chan
+Grab images, gifs and webms from a 4chan thread.
+
 ## Install
 
 - Download and install [Quicklisp](https://www.quicklisp.org/beta/)
